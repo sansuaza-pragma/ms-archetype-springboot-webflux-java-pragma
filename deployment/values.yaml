@@ -1,0 +1,6 @@
+# Variables Generales
+name: #{service-domain}#
+namespace: #{namespace_business_domain}#
+namespace_ingress: #{namespace-ingress-controller}#
+environment: #{environment}#
+env: #{env}#

@@ -1,0 +1,6 @@
+resources:
+  repositories:
+    - repository: xrs-aux-transversalresource
+      type: git
+      name: xrs-aux-transversalresource
+      ref: develop

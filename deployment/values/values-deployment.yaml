@@ -1,0 +1,134 @@
+deployment:
+  spec:
+    replicas: #{replicas}#
+    selector:
+      matchLabels:
+        app: #{project-name}#-$(MAJOR_VERSION)
+        pod: #{project-name}#-$(MAJOR_VERSION)-pod
+    template:
+      metadata:
+        labels:
+          app: #{project-name}#-$(MAJOR_VERSION)
+          pod: #{project-name}#-$(MAJOR_VERSION)-pod
+        annotations:
+          container.apparmor.security.beta.kubernetes.io/#{project-name}#-$(MAJOR_VERSION): "runtime/default"
+          container.apparmor.security.beta.kubernetes.io/#{elastic-apm-container}#: "runtime/default"
+      spec:
+        securityContext:
+          fsGroup: #{eclipse-temurin_21_alpine-gid}#
+          runAsUser: #{eclipse-temurin_21_alpine-uid}#
+          runAsGroup: #{eclipse-temurin_21_alpine-gid}#
+          runAsNonRoot: true
+        automountServiceAccountToken: #{false-value}#
+        initContainers:
+          - name: #{elastic-apm-container}#
+            image: #{elastic-curl-image}#
+            imagePullPolicy: Always
+            command:
+              - sh
+              - -c
+              - |
+                curl -L -o #{elastic-apm-volume-jar}# https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/1.49.0/elastic-apm-agent-1.49.0.jar
+            resources:
+              requests:
+                memory: #{elastic-memory-request}#
+                cpu: #{elastic-cpu-request}#
+              limits:
+                memory: #{elastic-memory-limit}#
+                cpu: #{elastic-cpu-limit}#
+            volumeMounts:
+              - name: #{elastic-apm-container}#-volume
+                mountPath: #{elasitic-apm-volume-mount}#
+              - mountPath: /tmp
+                name: tmp-volume
+            securityContext:
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              runAsNonRoot: true
+              capabilities:
+                drop:
+                  - ALL
+              seccompProfile:
+                type: #{seccompProfile-type}#
+        containers:
+          - name: #{project-name}#-$(MAJOR_VERSION)
+            image: #{image}#
+            imagePullPolicy: Always
+            resources:
+              requests:
+                memory: #{memory-request}#
+                cpu: #{cpu-request}#
+              limits:
+                memory: #{memory-limits}#
+                cpu: #{cpu-limits}#
+            ports:
+              - containerPort: #{container-port}#
+            envFrom:
+              - configMapRef:
+                  name: #{service-domain}#-$(MAJOR_VERSION)-configmap
+            volumeMounts:
+              - name: #{volume-mount-name}#
+                mountPath: #{container-mountPath}#
+                subPath: #{container-subPath}#
+              - name: properties-volume
+                mountPath: /app/messages.properties
+                subPath: messages.properties
+              - name: resilience-profiles
+                mountPath: /app/resilience-profiles.yaml
+                subPath: resilience-profiles.yaml
+            startupProbe:
+              httpGet:
+                path: /actuator/health
+                port: #{container-port}#
+                httpHeaders:
+                  - name: Content-Type
+                    value: application/json
+              initialDelaySeconds: 120
+              periodSeconds: 10
+              failureThreshold: 10
+              timeoutSeconds: 10
+            livenessProbe:
+              httpGet:
+                path: /actuator/health/liveness
+                port: #{container-port}#
+                httpHeaders:
+                  - name: Content-Type
+                    value: application/json
+              initialDelaySeconds: 60
+              periodSeconds: 10
+              failureThreshold: 10
+              timeoutSeconds: 10
+            readinessProbe:
+              httpGet:
+                path: /actuator/health/readiness
+                port: #{container-port}#
+                httpHeaders:
+                  - name: Content-Type
+                    value: application/json
+              initialDelaySeconds: 120
+              periodSeconds: 10
+              failureThreshold: 10
+              timeoutSeconds: 10
+            securityContext:
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              runAsNonRoot: true
+              capabilities:
+                drop:
+                  - ALL
+              seccompProfile:
+                type: #{seccompProfile-type}#
+        volumes:
+          - name: #{volume-mount-name}#
+            configMap:
+              name: #{service-domain}#-$(MAJOR_VERSION)-configmap
+          - name: #{elastic-apm-container}#-volume
+            emptyDir: { }
+          - name: tmp-volume
+            emptyDir: { }
+          - name: resilience-profiles
+            configMap:
+              name: resilience-profiles-configmap
+          - name: properties-volume
+            configMap:
+              name: messages-configmap

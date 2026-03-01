@@ -1,0 +1,56 @@
+# .helmignore
+# Archivos y directorios que no forman parte del Helm Chart
+# Coloca este archivo en el MISMO directorio donde se encuentra tu Chart.yaml
+
+# Directorios de Terraform y otros archivos relacionados con la infraestructura
+azure-pipelines.yaml
+.gitignore
+.gitattributes
+HELP.md
+mvnw
+mvnw.cmd
+pom.xml
+
+
+#Directorios del Proyecto
+src/
+k8s/
+Dockerfile
+
+
+# El propio script de despliegue
+deploy_versioning_test.sh
+
+# Documentación que no debe ir en el chart
+README.md
+
+# --- Exclusiones Generales Recomendadas ---
+# Directorios de control de versiones
+.git/
+.svn/
+.hg/
+
+# Archivos de caché y metadatos del sistema operativo/IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Directorios de compilación, artefactos y dependencias de lenguajes
+target/
+build/
+dist/
+tmp/
+temp/
+node_modules/
+venv/
+__pycache__/
+
+# Archivos de log
+*.log
+logs/
+
+# Archivos de empaquetado generados por Helm
+*.tgz
+*.pack

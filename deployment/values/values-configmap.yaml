@@ -1,0 +1,22 @@
+# ConfigMap
+ConfigMap:
+  server:
+    port: #{container-port}#
+  spring:
+    main:
+      web-application-type: #{application-type}#
+      allow-bean-definition-overriding: #{true-value}#
+    application:
+      name: #{application-name}#
+  management:
+    resources:
+      cache-refresh-time-seconds: #{cache-refresh-time-seconds}#
+rest:
+  connection-timeout-in-millis: #{connection-timeout-in-millis}#
+  read-timeout-in-millis: #{read-timeout-in-millis}#
+  circuitbreaker:
+    config-file: #{resilience-profile-file-path}#
+  allowed-host:
+    host-name: #{allowed-host-host-name}#
+
+

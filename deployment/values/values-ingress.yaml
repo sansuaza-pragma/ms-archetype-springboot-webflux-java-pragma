@@ -1,0 +1,26 @@
+ingress:
+  metadata:
+    labels:
+      app: #{project-name}#
+      env: #{env}#
+    annotations:
+      ssl_redirect: true
+      auth_tls_secret: #{auth-tls-scrt-ingress}#
+      auth_tls_pass_certificate_to_upstream: false
+      auth_tls_verify_client: "on"
+  spec:
+    ingressClassName: nginx
+    tls:
+      hosts: #{host-tls-ingress}#
+      secretName: #{spec-scrtname-ingress}#
+    rules:
+      host: #{host-rule-ingress}#
+      http:
+        paths:
+          path: #{api-controller-basepath}#
+          pathType: Prefix
+          backend:
+            service:
+              name: #{service-domain}#
+              port:
+                number: #{service-port}#

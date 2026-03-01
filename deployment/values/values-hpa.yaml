@@ -1,0 +1,11 @@
+HPA:
+  spec:
+    minReplicas: #{min-replicas-hpa}#
+    maxReplicas: #{max-replicas-hpa}#
+    metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: #{cpu-hpa}#

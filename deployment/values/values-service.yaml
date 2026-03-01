@@ -1,0 +1,13 @@
+Service:
+  metadata:
+    labels:
+      app: #{project-name}#
+      pod: #{project-name}#
+  spec:
+    selector:
+      app: #{project-name}#
+      pod: #{project-name}#
+    ports:
+      protocol: #{protocol}#
+      port: #{service-port}#
+      targetPort: #{container-port}#
